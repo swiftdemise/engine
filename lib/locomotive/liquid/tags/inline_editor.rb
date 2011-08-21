@@ -31,7 +31,6 @@ module Liquid
               end
             else
               output << %{
-                <script src="/javascripts/admin/jquery.js" type="text/javascript"></script>
                 <script src="/javascripts/admin/plugins/cookie.js" type="text/javascript"></script>
               }
             end
