@@ -3,8 +3,6 @@ module Admin
 
     include Locomotive::Routing::SiteDispatcher
 
-    require 'sanitize'
-
     before_filter :require_site
 
     before_filter :set_content_type
