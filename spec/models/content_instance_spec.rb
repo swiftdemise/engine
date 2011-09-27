@@ -6,7 +6,7 @@ describe ContentInstance do
 
   before(:each) do
     Site.any_instance.stubs(:create_default_pages!).returns(true)
-    @content_type = Factory.build(:content_type)
+    @content_type = FactoryGirl.build(:content_type)
     @content_type.content_custom_fields.build :label => 'Title', :kind => 'String'
     @content_type.content_custom_fields.build :label => 'Description', :kind => 'Text'
     @content_type.content_custom_fields.build :label => 'Visible ?', :kind => 'Text', :_alias => 'visible'
@@ -40,6 +40,35 @@ describe ContentInstance do
       content.errors[:_slug].should == ["is already taken"]
     end
 
+  end
+  
+  describe "#navigation" do
+    before(:each) do
+      %w(first second third).each_with_index do |item,index|
+        content = build_content({:title => item.to_s})
+        content._position_in_list = index
+        instance_variable_set "@#{item}", content
+      end
+    end
+    
+    it 'should find previous item when available' do
+      puts @second.previous
+      @second.previous.custom_field_1.should == "first"
+      @second.previous._position_in_list.should == 0
+    end
+    
+    it 'should find next item when available' do
+      @second.next.custom_field_1.should == "third"
+      @second.next._position_in_list.should == 2
+    end
+    
+    it 'should return nil when fetching previous item on first in list' do
+      @first.previous.should == nil
+    end
+    
+    it 'should return nil when fetching next item on last in list' do
+      @third.next.should == nil
+    end
   end
 
   describe '#permalink' do
@@ -111,8 +140,8 @@ describe ContentInstance do
   describe '#api' do
 
     before(:each) do
-      @account_1 = Factory.build('admin user', :id => fake_bson_id('1'))
-      @account_2 = Factory.build('frenchy user', :id => fake_bson_id('2'))
+      @account_1 = FactoryGirl.build('admin user', :id => fake_bson_id('1'))
+      @account_2 = FactoryGirl.build('frenchy user', :id => fake_bson_id('2'))
 
       @content_type.api_enabled = true
       @content_type.api_accounts = ['', @account_1.id, @account_2.id]

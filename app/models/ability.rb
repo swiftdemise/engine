@@ -61,9 +61,13 @@ class Ability
 
     can :point, Site
 
+    cannot :create, Site
+
     can :manage, Membership
 
-    cannot :change_role, Membership do |membership|
+    cannot :grant_admin, Membership
+
+    cannot [:update, :destroy], Membership do |membership|
       @membership.account_id == membership.account_id || # can not edit myself
       membership.admin? # can not modify an administrator
     end
@@ -72,7 +76,7 @@ class Ability
   def setup_admin_permissions!
     can :manage, :all
 
-    cannot :change_role, Membership do |membership|
+    cannot [:update, :destroy], Membership do |membership|
       @membership.account_id == membership.account_id # can not edit myself
     end
   end

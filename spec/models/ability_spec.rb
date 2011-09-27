@@ -3,12 +3,12 @@ require 'spec_helper'
 describe Ability do
 
   before :each do
-    @site = Factory(:site)
-    @account = Factory(:account)
+    @site = FactoryGirl.create(:site)
+    @account = FactoryGirl.create(:account)
 
-    @admin  = Factory(:membership, :account => Factory.stub(:account), :site => Factory.stub(:site))
-    @designer  = Factory(:membership, :account => Factory.stub(:account), :site => @site, :role => %(designer))
-    @author = Factory(:membership, :account => Factory.stub(:account), :site => @site, :role => %(author))
+    @admin  = FactoryGirl.create(:membership, :account => FactoryGirl.build(:account), :site => FactoryGirl.build(:site))
+    @designer  = FactoryGirl.create(:membership, :account => FactoryGirl.build(:account), :site => @site, :role => %(designer))
+    @author = FactoryGirl.create(:membership, :account => FactoryGirl.build(:account), :site => @site, :role => %(author))
   end
 
   context 'pages' do
@@ -123,6 +123,15 @@ describe Ability do
         should     allow_permission_from :manage, @designer
         should_not allow_permission_from :manage, @author
       end
+    end
+
+    context 'granting admin' do
+      it 'should allow only admins to grant admin role' do
+        should     allow_permission_from :grant_admin, @admin
+        should_not allow_permission_from :grant_admin, @designer
+        should_not allow_permission_from :grant_admin, @author
+      end
+
     end
 
   end
